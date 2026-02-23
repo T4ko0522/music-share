@@ -1,8 +1,10 @@
 # music-share
 
-Discord 上で **Bot へのメンション + 音楽URL** を受け取り、対象曲を特定して **Spotify / YouTube Music** のリンクを整形して返信する Bot です。
+Discord上で**Bot へのメンション + 音楽URL**を受け取り、対象曲を特定して **Spotify / YouTube Music** のリンクを整形して返信するBotです。  
+![demo](https://raw.githubusercontent.com/T4ko0522/music-share/refs/heads/master/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202026-02-24%20032835.png)
 
-設計の詳細は [architecture.md](./architecture.md) を参照してください。現在は Spotify と YouTube Music を対象とし、Apple Music は対応予定です。
+設計の詳細は [architecture.md](./architecture.md) を参照してください。  
+現在はSpotifyとYouTube Musicが対象で、Apple Musicは対応予定です。
 
 ## 必要環境
 
@@ -43,13 +45,13 @@ Discord 上で **Bot へのメンション + 音楽URL** を受け取り、対�
    npm start
    ```
 
-   開発時は `npm run dev` で tsx の watch モードで起動できます。
+   開発時は `npm run dev` で開発用モードで起動できます。
 
 ## 使い方
 
 1. Discord で Bot をメンションし、音楽 URL を送る  
    - 例: `@Bot https://open.spotify.com/track/xxxxx`
-2. Bot が曲を特定し、Spotify / YouTube Music のリンクを整形して返信する
+2. Bot が曲を特定し、Spotify / YouTube Musicのリンクを整形して返信する
 
 ## スクリプト
 
@@ -68,5 +70,3 @@ Discord 上で **Bot へのメンション + 音楽URL** を受け取り、対�
 - `src/matcher/` … 他サービス検索・スコアリング
 - `src/cache/` … 結果の TTL キャッシュ
 - `src/formatter/` … 返信メッセージの組み立て
-
-実装は段階的に進めます。まずは URL パースと Discord の疎通から確認することを推奨します。
