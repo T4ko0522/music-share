@@ -147,8 +147,8 @@ export class DiscordBot {
     // Ignore bots
     if (message.author.bot) return;
 
-    // Only respond to mentions
-    if (!this.client.user || !message.mentions.has(this.client.user)) return;
+    // Only respond to direct mentions (ignore implicit mentions from replies)
+    if (!this.client.user || !message.mentions.has(this.client.user, { ignoreRepliedUser: true })) return;
 
     const userId = message.author.id;
     const guildId = message.guildId;
