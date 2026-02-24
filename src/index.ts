@@ -10,6 +10,7 @@ import { YTMusicMatcher } from './matcher/YTMusicMatcher.js';
 import { CrossServiceMatcher } from './matcher/CrossServiceMatcher.js';
 import { TtlCache } from './cache/TtlCache.js';
 import { RateLimiter } from './ratelimit/RateLimiter.js';
+import { YouTubeChannelBlacklist } from './matcher/YouTubeChannelBlacklist.js';
 import { DiscordBot } from './discord/DiscordBot.js';
 import type { ConversionResult } from './types/index.js';
 import type { IServiceMatcher } from './matcher/IServiceMatcher.js';
@@ -47,7 +48,11 @@ async function main(): Promise<void> {
   if (!config.disableYtmusic) {
     matchers.push(ytmusicMatcher);
   }
-  const crossMatcher = new CrossServiceMatcher(matchers);
+  // --- YouTube チャンネルブラックリスト（スラッシュコマンドで登録、マッチ候補から除外） ---
+  const youtubeChannelBlacklist = new YouTubeChannelBlacklist();
+  await youtubeChannelBlacklist.load();
+
+  const crossMatcher = new CrossServiceMatcher(matchers, youtubeChannelBlacklist);
 
   // --- Cache & Rate Limiter ---
   const cache = new TtlCache<ConversionResult>(24 * 60 * 60 * 1000); // 24h TTL
@@ -60,6 +65,8 @@ async function main(): Promise<void> {
     crossMatcher,
     cache,
     rateLimiter,
+    youtubeChannelBlacklist,
+    blacklistAdminUserId: config.blacklistAdminUserId,
   });
 
   // --- Graceful Shutdown ---

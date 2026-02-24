@@ -7,6 +7,8 @@ export interface Config {
   spotifyClientSecret: string;
   ytmusicAuthCookie?: string;
   disableYtmusic: boolean;
+  /** /blacklist-channel を実行できるユーザーID */
+  blacklistAdminUserId: string;
 }
 
 function requireEnv(key: string): string {
@@ -28,5 +30,6 @@ export function loadConfig(): Config {
     spotifyClientSecret: requireEnv('SPOTIFY_CLIENT_SECRET'),
     ytmusicAuthCookie: process.env['YTMUSIC_AUTH_COOKIE'] || undefined,
     disableYtmusic: process.env['DISABLE_YTMUSIC'] === 'true',
+    blacklistAdminUserId: process.env['BLACKLIST_ADMIN_USER_ID'] || '',
   };
 }
