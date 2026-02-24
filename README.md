@@ -1,7 +1,7 @@
 # music-share
 
 Discord上で**Bot へのメンション + 音楽URL**を受け取り、対象曲を特定して **Spotify / YouTube Music** のリンクを整形して返信するBotです。  
-![demo](assets\example.png)
+![demo](assets/example.png)
 
 設計の詳細は [architecture.md](./architecture.md) を参照してください。  
 現在はSpotifyとYouTube Musicが対象で、Apple Musicは対応予定です。
