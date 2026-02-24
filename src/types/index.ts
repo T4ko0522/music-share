@@ -36,6 +36,8 @@ export interface MatchCandidate {
   albumName?: string;
   releaseYear?: number;
   explicit?: boolean;
+  /** YouTube/YT Music のチャンネルID（マッチ除外用） */
+  youtubeChannelId?: string;
 }
 
 /** A scored match candidate */
