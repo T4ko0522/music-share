@@ -1,14 +1,17 @@
 import type { TrackMetadata, ServiceLink } from '../types/index.js';
 import type { IServiceMatcher } from './IServiceMatcher.js';
+import type { YouTubeChannelBlacklist } from './YouTubeChannelBlacklist.js';
 import { selectBestMatch } from './scoring.js';
 import { Logger } from '../logger/index.js';
 
 export class CrossServiceMatcher {
   private readonly matchers: IServiceMatcher[];
+  private readonly youtubeChannelBlacklist: YouTubeChannelBlacklist | null;
   private readonly logger = new Logger('CrossServiceMatcher');
 
-  constructor(matchers: IServiceMatcher[]) {
+  constructor(matchers: IServiceMatcher[], youtubeChannelBlacklist?: YouTubeChannelBlacklist | null) {
     this.matchers = matchers;
+    this.youtubeChannelBlacklist = youtubeChannelBlacklist ?? null;
   }
 
   /**
@@ -28,7 +31,10 @@ export class CrossServiceMatcher {
       targetMatchers.map(async (matcher) => {
         this.logger.debug('Searching service', { service: matcher.service });
         const candidates = await matcher.search(source);
-        const best = selectBestMatch(source, candidates);
+        const ytBlacklist = this.youtubeChannelBlacklist?.getAll();
+        const best = selectBestMatch(source, candidates, {
+          youtubeChannelBlacklist: ytBlacklist?.length ? new Set(ytBlacklist) : undefined,
+        });
         return best
           ? {
               service: matcher.service,

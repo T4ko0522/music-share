@@ -105,4 +105,17 @@ describe('selectBestMatch', () => {
     expect(result).not.toBeNull();
     expect(result!.candidate.title).toBe('Bohemian Rhapsody');
   });
+
+  it('excludes candidates whose title contains blacklisted word (e.g. カラオケ)', () => {
+    const onlyKaraoke = [makeCandidate({ title: 'Bohemian Rhapsody カラオケ', artists: ['Queen'] })];
+    expect(selectBestMatch(makeSource(), onlyKaraoke)).toBeNull();
+
+    const mixed = [
+      makeCandidate({ title: 'Bohemian Rhapsody カラオケ', artists: ['Queen'] }),
+      makeCandidate({ title: 'Bohemian Rhapsody', artists: ['Queen'] }),
+    ];
+    const result = selectBestMatch(makeSource(), mixed);
+    expect(result).not.toBeNull();
+    expect(result!.candidate.title).toBe('Bohemian Rhapsody');
+  });
 });

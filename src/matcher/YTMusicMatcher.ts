@@ -30,14 +30,19 @@ export class YTMusicMatcher implements IServiceMatcher {
 
       const results = await this.ytmusic.searchSongs(query);
 
-      return results.slice(0, 5).map((song) => ({
-        service: MusicService.YouTubeMusic,
-        url: `https://music.youtube.com/watch?v=${song.videoId}`,
-        title: song.name,
-        artists: [song.artist.name],
-        durationMs: (song.duration ?? 0) * 1000,  // seconds → ms
-        albumName: song.album?.name,
-      }));
+      return results.slice(0, 5).map((song) => {
+        const s = song as { videoId: string; name: string; artist: { name: string; artistId?: string | null }; duration?: number; album?: { name?: string } };
+        const youtubeChannelId = s.artist?.artistId ?? undefined;
+        return {
+          service: MusicService.YouTubeMusic,
+          url: `https://music.youtube.com/watch?v=${s.videoId}`,
+          title: s.name,
+          artists: [s.artist.name],
+          durationMs: (s.duration ?? 0) * 1000,
+          albumName: s.album?.name,
+          ...(youtubeChannelId && { youtubeChannelId }),
+        };
+      });
     } catch (error) {
       // Partial success: return empty array instead of throwing
       this.logger.error('YT Music search failed', { error: String(error) });

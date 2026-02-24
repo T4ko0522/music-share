@@ -10,6 +10,9 @@ const BONUS_MAX = 10;
 /** Duration tolerance in milliseconds */
 const DURATION_TOLERANCE_MS = 10_000;
 
+/** タイトルに含まれていたら候補から除外する語（カラオケ版などを除く） */
+const TITLE_BLACKLIST = ['カラオケ'];
+
 /**
  * Score a match candidate against source metadata.
  * Returns a score from 0 to 100.
@@ -96,12 +99,32 @@ export function createScoredMatch(source: TrackMetadata, candidate: MatchCandida
   };
 }
 
-/** Select the best match from a list of candidates */
-export function selectBestMatch(source: TrackMetadata, candidates: MatchCandidate[]): ScoredMatch | null {
-  if (candidates.length === 0) return null;
+function isBlacklisted(title: string): boolean {
+  const lower = title.toLowerCase();
+  return TITLE_BLACKLIST.some((word) => lower.includes(word.toLowerCase()));
+}
+
+export interface SelectBestMatchOptions {
+  /** 除外する YouTube チャンネルID の集合 */
+  youtubeChannelBlacklist?: Set<string>;
+}
+
+/** Select the best match from a list of candidates. タイトル語ブラックリストと YouTube チャンネルブラックリストで除外。 */
+export function selectBestMatch(
+  source: TrackMetadata,
+  candidates: MatchCandidate[],
+  options?: SelectBestMatchOptions,
+): ScoredMatch | null {
+  let filtered = candidates.filter((c) => !isBlacklisted(c.title));
+  if (options?.youtubeChannelBlacklist?.size) {
+    filtered = filtered.filter(
+      (c) => !c.youtubeChannelId || !options.youtubeChannelBlacklist!.has(c.youtubeChannelId!),
+    );
+  }
+  if (filtered.length === 0) return null;
 
   let best: ScoredMatch | null = null;
-  for (const candidate of candidates) {
+  for (const candidate of filtered) {
     const scored = createScoredMatch(source, candidate);
     if (!best || scored.score > best.score) {
       best = scored;
