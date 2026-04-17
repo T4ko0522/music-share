@@ -147,8 +147,19 @@ export class DiscordBot {
     // Ignore bots
     if (message.author.bot) return;
 
-    // Only respond to direct mentions (ignore implicit mentions from replies)
-    if (!this.client.user || !message.mentions.has(this.client.user, { ignoreRepliedUser: true })) return;
+    if (!this.client.user) return;
+
+    const botId = this.client.user.id;
+
+    // メッセージ本文に <@botId> が含まれている = Bot個人への明示的メンション
+    const isDirectMention = message.content.includes(`<@${botId}>`);
+
+    // Botのメッセージへのリプライ
+    const isReplyToBot =
+      message.reference !== null &&
+      message.mentions.repliedUser?.id === botId;
+
+    if (!isDirectMention && !isReplyToBot) return;
 
     const userId = message.author.id;
     const guildId = message.guildId;
