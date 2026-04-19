@@ -151,8 +151,8 @@ export class DiscordBot {
 
     const botId = this.client.user.id;
 
-    // メッセージ本文に <@botId> が含まれている = Bot個人への明示的メンション
-    const isDirectMention = message.content.includes(`<@${botId}>`);
+    // mentions.users は @everyone や @here を含まず、直接メンションのみ
+    const isDirectMention = message.mentions.users.has(botId);
 
     // Botのメッセージへのリプライ
     const isReplyToBot =
